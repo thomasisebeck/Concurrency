@@ -1,11 +1,13 @@
 package com.company;
 
-public class MyThread extends Thread{
+//creates a thread that runs to consume items
+//same for both the thread and lock implementation
+public class MyThread1 extends Thread{
     private Thread t;
     private String threadName;
-    private Scrumboard s;
+    private ScrumThread s;
 
-    MyThread(Scrumboard scrum, String tn) {
+    MyThread1(ScrumThread scrum, String tn) {
         this.threadName = tn;
         System.out.println("Creating thread: " + threadName);
         s = scrum;
@@ -13,11 +15,9 @@ public class MyThread extends Thread{
 
     public void run() {
         for (int i = 0; i < 5; i++) {
-            synchronized (this) {
-                String item = s.getNextItem();
-                System.out.println(threadName + " Task: " + item);
-                s.completeItem(item);
-            }
+            String item = s.getNextItem();
+            System.out.println(threadName + " Task: " + item);
+            s.completeItem(item);
         }
     }
 

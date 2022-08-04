@@ -2,15 +2,16 @@ package com.company;
 
 import java.util.ArrayList;
 
-public class Scrumboard {
-    ArrayList<String> todo;
-    ArrayList<String> completed;
+//The shared scrumbaord object
+//Makes use of synchronised(this) to synchronise
+public class ScrumThread {
+    private ArrayList<String> todo;
+    private ArrayList<String> completed;
 
-    public Scrumboard() {
+    ScrumThread() {
 
         todo = new ArrayList<>();
         completed = new ArrayList<>();
-
 
         todo.add("ONE");
         todo.add("TWO");
@@ -31,19 +32,16 @@ public class Scrumboard {
             if (todo.size() > 0) {
                 return todo.remove(todo.size() - 1);
             }
-            return "empty list";
         }
+        return "empty list";
     }
 
     public void completeItem(String i) {
-
-        if (i.equals("empty list")) return ;
-
         synchronized (this) {
+            if (i.equals("empty list")) return ;
             completed.add(i);
             System.out.println("Completed " + i);
         }
     }
 
 }
-
