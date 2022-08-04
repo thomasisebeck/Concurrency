@@ -4,8 +4,8 @@ package com.company;
 //same for both the thread and lock implementation
 public class MyThread2 extends Thread{
     private Thread t;
-    private String threadName;
-    private ScrumLock s;
+    final private String threadName;
+    final private ScrumLock s;
 
     MyThread2(ScrumLock scrum, String tn) {
         this.threadName = tn;
