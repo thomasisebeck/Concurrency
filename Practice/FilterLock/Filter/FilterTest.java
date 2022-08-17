@@ -1,7 +1,9 @@
 package Filter;
 
-public class Main {
+public class FilterTest {
     public static void main(String[] args) {
+
+        //NB: USE THREAD ID AND VOLATILE!
 
         Counter c = new Counter(0, 6);
         Thread t1 = new ThreadCounter(c, "T1");

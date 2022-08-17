@@ -1,7 +1,5 @@
 package Filter;
 
-import com.company.ScrumLock;
-
 public class ThreadCounter  extends Thread{
     private Thread t;
     final private String threadName;

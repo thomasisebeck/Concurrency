@@ -3,13 +3,11 @@ package com.company;
 import java.util.ArrayList;
 
 //The shared scrumbaord object
-//Makes use of synchronised(this) to synchronise
 public class ScrumThread {
     private ArrayList<String> todo;
     private ArrayList<String> completed;
 
     ScrumThread() {
-
         todo = new ArrayList<>();
         completed = new ArrayList<>();
 
@@ -28,20 +26,16 @@ public class ScrumThread {
     }
 
     public String getNextItem() {
-        synchronized (this) {
-            if (todo.size() > 0) {
-                return todo.remove(todo.size() - 1);
-            }
-        }
+        if (todo.size() > 0)
+            return todo.remove(todo.size() - 1);
+
         return "empty list";
     }
 
     public void completeItem(String i) {
-        synchronized (this) {
-            if (i.equals("empty list")) return ;
-            completed.add(i);
-            System.out.println("Completed " + i);
-        }
+        if (i.equals("empty list")) return ;
+        completed.add(i);
+        System.out.println("Completed " + i);
     }
 
 }

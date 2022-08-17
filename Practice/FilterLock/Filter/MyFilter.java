@@ -4,13 +4,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class Filter implements Lock {
+public class MyFilter implements Lock {
 
     private int[] level;
     private int[] victim;
     private int numLevels;
 
-    public Filter(int n) {
+    public MyFilter(int n) {
         level = new int[n]; //Level of each thread
         victim = new int[n]; //Victim on each level
         numLevels = n;
@@ -55,6 +55,8 @@ public class Filter implements Lock {
         int me = (int) Thread.currentThread().getId() - 16 - numLevels;
         level[me] = 0; //back at start
     }
+
+    //Needed to implement lock
 
     public void lockInterruptibly() throws InterruptedException { throw new UnsupportedOperationException(); }
     public boolean tryLock()

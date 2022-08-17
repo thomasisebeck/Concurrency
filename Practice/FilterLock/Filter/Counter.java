@@ -2,11 +2,11 @@ package Filter;
 
 public class Counter {
     private long value;
-    private Filter lock;
+    private MyFilter lock;
 
     public Counter(int start, int filterSize) {
         value = start;
-        lock = new Filter(filterSize);
+        lock = new MyFilter(filterSize);
     }
 
     public long getAndInc() {
