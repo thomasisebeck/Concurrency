@@ -13,11 +13,21 @@ public class ScrumLock implements Lock {
     private ArrayList<String> completed;
     private Lock lock;
 
-    ScrumLock() {
+    int victim;
+    int id;
+    private boolean flag[] = new boolean[2];
+
+    ScrumLock(int i) {
         lock = new ReentrantLock();
 
         todo = new ArrayList<>();
         completed = new ArrayList<>();
+
+        flag[0] = false;
+        flag[1] = false;
+        victim = 0;
+
+        id = i;
 
         todo.add("ONE");
         todo.add("TWO");
@@ -34,31 +44,26 @@ public class ScrumLock implements Lock {
     }
 
     public String getNextItem() {
-
         try {
-            lock.lock();
-            if (todo.size() > 0) {
+            this.lock();
+            if (todo.size() > 0)
                 return todo.remove(todo.size() - 1);
-            }
         } finally {
-            lock.unlock();
+            this.unlock();
         }
 
         return "empty list";
     }
 
     public void completeItem(String i) {
-
         try {
-            lock.lock();
-
+            this.lock();
             if (i.equals("empty list"))
                 return ; //lock unlocks automatically
-
             completed.add(i);
-            System.out.println("Completed " + i);
+            //System.out.println("Completed " + i);
         } finally {
-            lock.unlock();
+            this.unlock();
         }
     }
 
@@ -67,15 +72,26 @@ public class ScrumLock implements Lock {
     //a Reentrant lock to do the synchronisation
 
     @Override
-    public void lock() {}
+    public void lock() {
+        int me = id;
+        int other = 1 - id;
+        flag[me] = true;
+        while (flag[other] && victim == me){}
+    }
+    @Override
+    public void unlock() {
+        flag[id] = false;
+    }
+
+    //Needed to implement lock
+
     @Override
     public void lockInterruptibly() throws InterruptedException {}
     @Override
     public boolean tryLock() { return false;}
     @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {return false; }
-    @Override
-    public void unlock() {}
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException { return false; }
+
     @Override
     public Condition newCondition() { return null;}
 }

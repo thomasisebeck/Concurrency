@@ -7,9 +7,8 @@ public class MyThread2 extends Thread{
     final private String threadName;
     final private ScrumLock s;
 
-    MyThread2(ScrumLock scrum, String tn) {
-        this.threadName = tn;
-        System.out.println("Creating thread: " + threadName);
+    MyThread2(ScrumLock scrum) {
+        this.threadName = this.getName();
         s = scrum;
     }
 
@@ -24,7 +23,7 @@ public class MyThread2 extends Thread{
     public void start() {
         System.out.println("Starting thread " + threadName);
         if (t == null) {
-            t = new Thread(this, threadName);
+            t = new Thread(this);
             t.start();
         }
     }
