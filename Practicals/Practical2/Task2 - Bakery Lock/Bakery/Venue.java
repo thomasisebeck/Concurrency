@@ -1,8 +1,8 @@
-package Filter;
+package Bakery;
 
 public class Venue {
-	Filter lock;
-	Venue(Filter l) {
+	Bakery lock;
+	Venue(Bakery l) {
 		lock = l;
 	}
 	public void dropOff(int i){
@@ -21,7 +21,7 @@ public class Venue {
 		} catch (InterruptedException e) {
 
 		} finally {
-			System.out.println("Thread " + Thread.currentThread().getName()+ " has left: LOAD " + i);
+			System.out.println("BUS " + Thread.currentThread().getName()+ " has left: LOAD " + i);
 			lock.unlock();
 		}
 
