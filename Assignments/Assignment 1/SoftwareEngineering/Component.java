@@ -5,10 +5,10 @@ public class Component
 	public volatile long developTime, testTime;
 	public String name;
 
-	public Component(char c, String n){
+	public Component(char c, String n) {
 		name = n;
 
-		switch(c){
+		switch(c) {
 			case 's': 	developTime = 500;
 						testTime = 1000;
 						break;

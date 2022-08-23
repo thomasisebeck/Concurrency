@@ -21,10 +21,7 @@ public class MyFilter implements Lock {
 
     @Override
     public void lock() {
-        int me = (int) Thread.currentThread().getId() - 16 - numLevels;
-
-        int test = (int) Thread.currentThread().getId() - 16 - numLevels;
-        //System.out.println("TEST: " + test);
+        int me = (int) Thread.currentThread().getId() - 11 - numLevels;
 
         for (int i = 1; i < numLevels; i++) { //attempt to enter level
             level[me] = i;
@@ -52,7 +49,7 @@ public class MyFilter implements Lock {
 
     @Override
     public void unlock() {
-        int me = (int) Thread.currentThread().getId() - 16 - numLevels;
+        int me = (int) Thread.currentThread().getId() - 11 - numLevels;
         level[me] = 0; //back at start
     }
 
