@@ -17,6 +17,5 @@ public class Main {
         t3.start();
         t4.start();
         t5.start();
-
     }
 }

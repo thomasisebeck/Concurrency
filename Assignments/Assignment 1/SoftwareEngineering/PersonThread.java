@@ -11,8 +11,12 @@ public class PersonThread extends Thread{
 
         boolean devHas = true;
         boolean testHas = true;
+        int misses = 0;
 
-        while (true) { //items in the develop or test queue
+        //items in the develop or test queue
+        while (proj.getNumTested() < proj.getNumComponents() || proj.getNumDeveloped() < proj.getNumComponents()) {
+
+            //System.out.println("Exec: " + proj.devEmpty() + ", " + proj.testEmpty());
 
             if (!proj.devEmpty()) {
                 //synchronised dequeue with lock
@@ -20,7 +24,6 @@ public class PersonThread extends Thread{
 
                 if (toDev == null)
                     continue; //queue was empty
-
 
                 //working time between 100 and 500 ms
                 int randomSleep = (int) (Math.random() * 400) + 100;
@@ -64,8 +67,10 @@ public class PersonThread extends Thread{
                 //synchronised dequeue with lock
                 Component toTest = proj.getComponentFromTest();
 
-                if (toTest == null)
+                if (toTest == null) {
+                    misses++;
                     continue; //queue was empty
+                }
 
 
                 //working time between 100 and 500 ms
@@ -101,10 +106,29 @@ public class PersonThread extends Thread{
                 System.out.println(this.getName() + " is ready to develop/test a component.");
                 //////////////////////////////////
 
+                // catch the last few projects that were out of the
+                // queue while being tested
+                /*if (proj.testEmpty()) {
+                    for (int i = 0; i < 5; i++) {
+                        try {
+                            Thread.sleep(200 + randomSleep);
+                        } catch (InterruptedException ignored) {}
+                        if (!proj.testEmpty())
+                            break;
+                    }
+                }*/
+
+
             } //if not test empty
         }
 
-       // System.out.println(Thread.currentThread().getName() + " FINISHED ALL DEVELOPMENT AND TESTING");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {}
+
+        proj.printResults();
+
+
 
     }
 }

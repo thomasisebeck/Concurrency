@@ -28,7 +28,7 @@ public class Bakery implements Lock {
     @Override
     public void lock() {
 
-        int me = (int) Thread.currentThread().getId() - 11 - numLevels;
+        int me = (int) Thread.currentThread().getId() - 16;
 
         flag[me] = true;
         label[me] = getMax(label) + 1;
@@ -43,7 +43,7 @@ public class Bakery implements Lock {
 
     @Override
     public void unlock() {
-        int me = (int) Thread.currentThread().getId() - 11 - numLevels;
+        int me = (int) Thread.currentThread().getId() - 16;
        // System.out.println(Thread.currentThread().getName() + "LEFT!!");
         flag[me] = false;
     }
