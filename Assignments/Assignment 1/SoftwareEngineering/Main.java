@@ -17,5 +17,8 @@ public class Main {
         t3.start();
         t4.start();
         t5.start();
+
+        //Feedback: Threads should be made in the constructor!
+        //Should be able to pass in a variable number of threads!
     }
 }
