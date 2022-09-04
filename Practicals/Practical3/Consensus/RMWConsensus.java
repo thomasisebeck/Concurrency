@@ -3,7 +3,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RMWConsensus<T> extends ConsensusProtocol{
+public class RMWConsensus<T> extends ConsensusProtocol<T>{
     //public volatile T[] proposed;
     static AtomicInteger atomicInteger = null;
 
