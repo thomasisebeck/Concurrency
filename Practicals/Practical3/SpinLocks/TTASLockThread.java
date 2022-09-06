@@ -1,9 +1,9 @@
 package SpinLocks;
 
-public class TASLockThread extends Thread {
-    private TASLock lock;
+public class TTASLockThread extends Thread {
+    private TTASLock lock;
 
-    TASLockThread(TASLock l) {
+    TTASLockThread(TTASLock l) {
         this.lock = l;
     }
 
