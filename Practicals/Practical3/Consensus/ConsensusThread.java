@@ -2,8 +2,8 @@ package Consensus;
 
 import java.util.Random;
 
-public class ConsensusThread extends Thread
-{
+public class ConsensusThread extends Thread  {
+
 	private Consensus<Integer> consensus;
 
 	ConsensusThread(Consensus<Integer> consensusObject)

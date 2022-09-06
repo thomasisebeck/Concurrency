@@ -23,10 +23,12 @@ public class RMWConsensus<T> extends ConsensusProtocol<T>{
                 atomicInteger = new AtomicInteger((int) Thread.currentThread().getId() - 16);
         }
 
-        if (atomicInteger.compareAndSet(i, i))
-            System.out.println(Thread.currentThread().getName() + " decided " + proposed[i] + " index " + i);
-        else
-            System.out.println(Thread.currentThread().getName() + " decided " + proposed[j] + " index " + j);
+        System.out.println(Thread.currentThread().getName() + " register values: [" + proposed[i] + ", " + proposed[j] + "]");
+
+        if (atomicInteger.compareAndSet(i, i)) // i first
+            System.out.println(Thread.currentThread().getName() + " decided " + proposed[i]);
+        else // j first
+            System.out.println(Thread.currentThread().getName() + " decided " + proposed[j]);
 
     }
 }
