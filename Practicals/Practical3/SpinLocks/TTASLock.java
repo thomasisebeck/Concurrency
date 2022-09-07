@@ -10,20 +10,11 @@ public class TTASLock implements Lock {
 
     @Override
     public void lock() {
-       /* while (true) {
+        while (true) {
             while (state.get()) {}; //spin while lock taken
             if (!state.getAndSet(true)) //returns prev (false) if free
-                return ; //acquired lock if free
-        }*/
-
-        boolean acquired = false;
-        while(!acquired) {
-            /* First test the lock without invalidating
-               any cache lines. */
-            if(!state.get()) {
-                /* Attempt to lock the lock with an atomic CAS. */
-                acquired = state.compareAndSet(false, true);
-            }
+                return ; //acquire lock if free
+            //go back to spining if failed to aquire
         }
     }
 
