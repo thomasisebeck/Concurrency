@@ -12,8 +12,10 @@ public class TTASLock implements Lock {
     public void lock() {
         while (true) {
             while (state.get()) {}; //spin while lock taken
-            if (!state.getAndSet(true)) //returns prev (false) if free
-                return ; //acquire lock if free
+            if (!state.getAndSet(true)) { //returns prev (false) if free
+                return ;
+            }
+                 //acquire lock if free
             //go back to spining if failed to aquire
         }
     }

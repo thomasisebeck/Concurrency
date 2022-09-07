@@ -3,7 +3,7 @@ package SpinLocks;
 import java.util.ArrayList;
 
 public class LockTests {
-    public static void TAS(int overheadOffset, int loopIterations, int sleepTime) {
+    public static void TAS(int loopIterations, int sleepTime) {
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("             TAS           ");
@@ -14,29 +14,29 @@ public class LockTests {
         ArrayList<Long> diffArray = new ArrayList<>();
         ArrayList<Integer> numThreadsArr = new ArrayList<>();
 
-        ArrayList<TASLockThread> TASThreads = null;
+        ArrayList<TASLockThread> Threads = null;
 
         for (int i = 0; i < loopIterations; i++) {
 
             System.out.println("i = " + i + " ...");
 
-            TASThreads = new ArrayList<>();
+            Threads = new ArrayList<>();
 
             for (int j = 0; j < (5 * i); j++)
-                TASThreads.add(new TASLockThread(l_tas, sleepTime));
+                Threads.add(new TASLockThread(l_tas, sleepTime));
 
             for (int j = 0; j < (5 * i); j++)
-                TASThreads.get(j).start();
+                Threads.get(j).start();
 
-            numThreadsArr.add(TASThreads.size());
+            numThreadsArr.add(Threads.size());
 
             // System.out.println("Testing " + numThreads + " thread(s)");
 
             long startTime = System.currentTimeMillis();
 
             //wait while a thread is alive
-            for (int j = 0; j < TASThreads.size(); j++) {
-                while (TASThreads.get(j).isAlive()) {}
+            for (int j = 0; j < Threads.size(); j++) {
+                while (Threads.get(j).isAlive()) {}
             }
 
             long elapsedTime = System.currentTimeMillis() - startTime;
@@ -45,21 +45,24 @@ public class LockTests {
 
             //add time to array
             timeArray.add(elapsedTime);
-            diffArray.add(elapsedTime - (TASThreads.size() * overheadOffset));
+            diffArray.add(elapsedTime - (Threads.size() * sleepTime));
 
-            while (TASThreads.size() > 0)
-                TASThreads.remove(0);
+            while (Threads.size() > 0)
+                Threads.remove(0);
             //Clear the array
-            TASThreads = null;
+            Threads = null;
 
         }
 
         double avgSlope = 0;
         ArrayList<Long> slopes = new ArrayList<>();
-        for (int i = 1; i < diffArray.size(); i++) {
+
+        for (int i = 1; i < diffArray.size(); i++)
             slopes.add(diffArray.get(i) - diffArray.get(i - 1));
-            avgSlope += diffArray.get(i) - diffArray.get(i - 1);
-        }
+
+        for (int i = 0; i < slopes.size(); i++)
+            avgSlope += slopes.get(i);
+
         avgSlope /= slopes.size();
 
         System.out.println("Number of threads: " + numThreadsArr.toString());
@@ -72,11 +75,11 @@ public class LockTests {
 
     }
 
-    public static void TTAS(int overheadOffset, int loopIterations, int sleepTime) {
+    public static void TTAS(int loopIterations, int sleepTime) {
         //---------------------------- TTAS LOCK -------------------------//
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("           TTAS            ");
+        System.out.println("            TTAS           ");
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
         TTASLock l_ttas = new TTASLock();
@@ -84,29 +87,29 @@ public class LockTests {
         ArrayList<Long> diffArray = new ArrayList<>();
         ArrayList<Integer> numThreadsArr = new ArrayList<>();
 
-        ArrayList<TTASLockThread> TTASThreads = null;
+        ArrayList<TTASLockThread> Threads = null;
 
         for (int i = 0; i < loopIterations; i++) {
 
             System.out.println("i = " + i + " ...");
 
-            TTASThreads = new ArrayList<>();
+            Threads = new ArrayList<>();
 
             for (int j = 0; j < (5 * i); j++)
-                TTASThreads.add(new TTASLockThread(l_ttas, sleepTime));
+                Threads.add(new TTASLockThread(l_ttas, sleepTime));
 
             for (int j = 0; j < (5 * i); j++)
-                TTASThreads.get(j).start();
+                Threads.get(j).start();
 
-            numThreadsArr.add(TTASThreads.size());
+            numThreadsArr.add(Threads.size());
 
             // System.out.println("Testing " + numThreads + " thread(s)");
 
             long startTime = System.currentTimeMillis();
 
             //wait while a thread is alive
-            for (int j = 0; j < TTASThreads.size(); j++) {
-                while (TTASThreads.get(j).isAlive()) {}
+            for (int j = 0; j < Threads.size(); j++) {
+                while (Threads.get(j).isAlive()) {}
             }
 
             long elapsedTime = System.currentTimeMillis() - startTime;
@@ -115,21 +118,24 @@ public class LockTests {
 
             //add time to array
             timeArray.add(elapsedTime);
-            diffArray.add(elapsedTime - (TTASThreads.size() * overheadOffset));
+            diffArray.add(elapsedTime - (Threads.size() * sleepTime));
 
-            while (TTASThreads.size() > 0)
-                TTASThreads.remove(0);
+            while (Threads.size() > 0)
+                Threads.remove(0);
             //Clear the array
-            TTASThreads = null;
+            Threads = null;
 
         }
 
         double avgSlope = 0;
         ArrayList<Long> slopes = new ArrayList<>();
-        for (int i = 1; i < diffArray.size(); i++) {
+
+        for (int i = 1; i < diffArray.size(); i++)
             slopes.add(diffArray.get(i) - diffArray.get(i - 1));
-            avgSlope += diffArray.get(i) - diffArray.get(i - 1);
-        }
+
+        for (int i = 0; i < slopes.size(); i++)
+            avgSlope += slopes.get(i);
+
         avgSlope /= slopes.size();
 
         System.out.println("Number of threads: " + numThreadsArr.toString());
@@ -146,55 +152,21 @@ public class LockTests {
         //sleep time
         final int OVERHEAD_OFFSET = 5; //thread.sleep time
         final int LOOP_ITERATIONS = 7;
-        final int SLEEP_TIME = 3;
+        final int SLEEP_TIME = 20;
 
 
-        TTAS(OVERHEAD_OFFSET, LOOP_ITERATIONS, SLEEP_TIME);
-
-        /*
-
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                 TAS
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            i = 1 ...
-            i = 2 ...
-            i = 3 ...
-            i = 4 ...
-            i = 5 ...
-            i = 6 ...
-            Number of threads: [5, 10, 15, 20, 25, 30]
-            ----------------------------------------------------------------------
-            TASLock time taken: [1542, 3554, 6142, 10170, 14456, 19152] time in ms
-            TASLock overhead:   [1417, 3304, 5767, 9670, 13831, 18402] time in ms
-            Overhead increase:  [1887, 2463, 3903, 4161, 4571] time in ms
-            ----------------------------------------------------------------------
-
-         */
-
-        TAS(OVERHEAD_OFFSET, LOOP_ITERATIONS, SLEEP_TIME);
-
-        /*
-
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                       TTAS
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            i = 1 ...
-            i = 2 ...
-            i = 3 ...
-            i = 4 ...
-            i = 5 ...
-            i = 6 ...
-            Number of threads: [5, 10, 15, 20, 25, 30]
-            ----------------------------------------------------------------------
-            TTASLock time taken: [1500, 3490, 6196, 9775, 13012, 17382] time in ms
-            TTASLock overhead:   [1375, 3240, 5821, 9275, 12387, 16632] time in ms
-            Overhead increase:   [1865, 2581, 3454, 3112, 4245] time in ms
-            ----------------------------------------------------------------------
-
-         */
+        TTAS(LOOP_ITERATIONS, SLEEP_TIME);
 
 
-        //----------------------------------------------------------------//
+        try {
+            System.out.println("Cooling off...");
+            Thread.sleep(10000);
+            System.out.println("Done cooling off...");
+        }
+        catch (InterruptedException e) {}
+
+        TAS(LOOP_ITERATIONS, SLEEP_TIME);
+
 
 
 
