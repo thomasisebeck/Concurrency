@@ -217,8 +217,7 @@ public class LockTests {
         System.out.println("----------------------------------------------------------------------");
 
     }
-
-
+        
     public static void main (String[] args) {
 
         //sleep time
