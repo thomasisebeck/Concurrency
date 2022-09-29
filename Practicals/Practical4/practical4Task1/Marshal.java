@@ -1,4 +1,4 @@
-package practical4;
+package practical4Task1;
 
 public class Marshal extends Thread {
 
@@ -12,6 +12,7 @@ public class Marshal extends Thread {
 	@Override
 	public void run()
 	{
-
+		for (int i = 0; i < 5; i++)
+			vs.castBallot();
 	}
 }
