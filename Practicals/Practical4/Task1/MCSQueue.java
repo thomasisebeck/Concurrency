@@ -1,4 +1,4 @@
-package practical4Task1;
+package Task1;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,14 +56,13 @@ public class MCSQueue implements Lock {
             if (tail.compareAndSet(node, null)){     //try to set tail to null (empty)
                 System.out.println(Thread.currentThread().getName() + " Person " + node.number + " has cast a vote");
                 printQueue(tail.get());
-                return;
+                return ;
             }
 
             while (node.next == null) {}                    //wait for successor to fill next
         }
 
         System.out.println(Thread.currentThread().getName() + " Person " + node.number + " has cast a vote");
-
 
 
         node.next.pred = node.pred;

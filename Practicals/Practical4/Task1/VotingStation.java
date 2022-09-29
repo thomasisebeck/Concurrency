@@ -1,4 +1,4 @@
-package practical4Task1;
+package Task1;
 
 import java.util.concurrent.locks.Lock;
 
