@@ -67,6 +67,7 @@ public class Timeout implements Lock {
 
        if (!tail.compareAndSet(qnode, myPred))
            qnode.pred = myPred;
+
        return false;
     }
 
@@ -88,6 +89,8 @@ public class Timeout implements Lock {
         //print the queue on exit
         printQueue();
         System.out.println("");
+
+        printList.remove(myNode.get().nodeName + " " + myNode.get().number);
 
         if (!tail.compareAndSet(node, null)) // If I'm not the tail, let the next node go
             node.pred = AVAILABLE;
