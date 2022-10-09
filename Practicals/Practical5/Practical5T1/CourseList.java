@@ -8,7 +8,7 @@ public class CourseList {
     private Node head;
     private Node tail;
     private Lock lock = new ReentrantLock();
-    AtomicInteger currentPerson;
+    private AtomicInteger currentPerson;
 
     public CourseList() {
         head = new Node(0, Integer.MIN_VALUE);
@@ -17,7 +17,44 @@ public class CourseList {
         currentPerson = new AtomicInteger(0);
     }
 
-    public void add(double time) {
+    public boolean isEmpty() {
+        return head.next == null || head.next == tail;
+    }
+    public void print() {
+        lock.lock();
+
+        try {
+            Node curr = head.next;
+            Node prev = head;
+
+            if (curr != null) {
+                System.out.print(Thread.currentThread().getName() + ": ");
+                while (curr != tail && curr != null) {
+                    long time = curr.remainingTime();
+                    if (time <= 0) {
+                        System.out.print("(P-" + curr.number + ", 0ms)");
+                        //time limit reached, remove the node
+                        prev.next = curr.next;
+                        curr.next = null;
+                        curr = prev.next;
+                    } else
+                        System.out.print("(P-" + curr.number + ", " + time + "ms)");
+
+                    if (curr.next != tail && curr.next != null)
+                        System.out.print(", ");
+                    prev = curr;
+                    curr = curr.next;
+                }
+                System.out.println("");
+            } //curr not null, could be becuase set to heads next!
+        }
+        finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void add(int time) {
         lock.lock();
 
         try {
@@ -35,17 +72,24 @@ public class CourseList {
         }
         finally {
             lock.unlock();
+            print();
         }
     }
 
-
     private class Node {
-        Node(double time, int number) {
+        Node(int time, int number) {
             this.time = time;
             this.number = number;
+            startTime = System.currentTimeMillis();
         }
-        public double time;
-        public double number;
+        public long startTime;
+        public long remainingTime() {
+            long rem =  this.time - (System.currentTimeMillis() - this.startTime);
+            if (rem > this.time) return 0;
+            return rem;
+        }
+        public int time;
+        public int number;
         public Node next;
     }
 }
