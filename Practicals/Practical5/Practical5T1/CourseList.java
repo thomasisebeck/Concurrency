@@ -11,7 +11,7 @@ public class CourseList {
     private AtomicInteger currentPerson;
 
     public CourseList() {
-        head = new Node(0, Integer.MIN_VALUE);
+        head = new Node(0, -1);
         tail = new Node(0, Integer.MAX_VALUE);
         head.next = tail;
         currentPerson = new AtomicInteger(0);
@@ -25,27 +25,38 @@ public class CourseList {
 
         try {
             Node curr = head.next;
-            Node prev = head;
+            Node prev = null;
+            String toPrint = "";
+            boolean mustPrint = false;
 
             if (curr != null) {
-                System.out.print(Thread.currentThread().getName() + ": ");
+                toPrint += Thread.currentThread().getName() + ": ";
                 while (curr != tail && curr != null) {
                     long time = curr.remainingTime();
                     if (time <= 0) {
-                        System.out.print("(P-" + curr.number + ", 0ms)");
+                        toPrint += "(P-" + curr.number + ", 0ms)";
+                        mustPrint = true;
                         //time limit reached, remove the node
-                        prev.next = curr.next;
-                        curr.next = null;
-                        curr = prev.next;
+                        if (prev != null) { //removes if time is up
+                            prev.next = curr.next;
+                            curr.next = null;
+                            curr = prev;
+                        }
+                        else {
+                            head = head.next;
+                        }
                     } else
-                        System.out.print("(P-" + curr.number + ", " + time + "ms)");
+                        toPrint += "(P-" + curr.number + ", " + time + "ms)";
 
                     if (curr.next != tail && curr.next != null)
-                        System.out.print(", ");
+                        toPrint += ", ";
                     prev = curr;
                     curr = curr.next;
                 }
-                System.out.println("");
+                if (mustPrint) {
+                    System.out.println(toPrint);
+                }
+
             } //curr not null, could be becuase set to heads next!
         }
         finally {
@@ -59,7 +70,7 @@ public class CourseList {
 
         try {
             Node pred = head;
-            Node curr = pred.next;
+            Node curr = head.next;
 
             while (curr != tail) { //get the node before the tail
                 pred = curr;
@@ -67,12 +78,13 @@ public class CourseList {
             }
 
             Node newNode = new Node(time, currentPerson.getAndIncrement());
+
             newNode.next = tail;
             pred.next = newNode;
         }
         finally {
+            System.out.println(Thread.currentThread().getName() + " ADDED (P-" + (currentPerson.get() - 1) + ", " + time + "ms)");
             lock.unlock();
-            print();
         }
     }
 
