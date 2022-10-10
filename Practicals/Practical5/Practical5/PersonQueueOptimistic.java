@@ -1,14 +1,13 @@
-package Practical5T1;
+package Practical5;
 
-class PersonQueueFine extends Thread {
-    FineList list;
+public class PersonQueueOptimistic extends Thread{
+    OptimisticList list;
     int nodesAdded;
     int timeSlept;
-    PersonQueueFine() {
-        list = new FineList();
+    PersonQueueOptimistic() {
+        list = new OptimisticList();
         nodesAdded = 0;
         timeSlept = 0;
-        //list.print();
     }
 
     public void run() {
@@ -29,6 +28,6 @@ class PersonQueueFine extends Thread {
             }catch (InterruptedException e) {}
             list.print();
         }
-    }
 
+    }
 }

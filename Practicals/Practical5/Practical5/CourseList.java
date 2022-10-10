@@ -1,4 +1,4 @@
-package Practical5T1;
+package Practical5;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -20,6 +20,7 @@ public class CourseList {
     public boolean isEmpty() {
         return head.next == null || head.next == tail;
     }
+
     public void print() {
         lock.lock();
 
@@ -78,7 +79,6 @@ public class CourseList {
             }
 
             Node newNode = new Node(time, currentPerson.getAndIncrement());
-
             newNode.next = tail;
             pred.next = newNode;
         }

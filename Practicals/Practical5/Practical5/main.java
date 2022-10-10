@@ -1,4 +1,4 @@
-package Practical5T1;
+package Practical5;
 
 public class main {
 
@@ -30,10 +30,25 @@ public class main {
         f5.start();
     }
 
+    static void Task3() {
+        PersonQueueOptimistic f1 = new PersonQueueOptimistic();
+       /* PersonQueueOptimistic f2 = new PersonQueueOptimistic();
+        PersonQueueOptimistic f3 = new PersonQueueOptimistic();
+        PersonQueueOptimistic f4 = new PersonQueueOptimistic();
+        PersonQueueOptimistic f5 = new PersonQueueOptimistic();*/
+
+        f1.start();
+        /*f2.start();
+        f3.start();
+        f4.start();
+        f5.start();*/
+    }
+
     public static void main(String args[]){
 
         //Task1();
-        Task2();
+        //Task2();
+        Task3();
 
     }
 

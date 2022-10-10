@@ -1,7 +1,6 @@
-package Practical5T1;
+package Practical5;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FineList {
