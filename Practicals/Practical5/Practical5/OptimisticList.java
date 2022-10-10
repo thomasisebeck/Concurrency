@@ -121,7 +121,7 @@ public class OptimisticList {
                     } //if validate()
                 } finally { curr.lock.unlock(); }
             } finally {
-                System.out.println(Thread.currentThread().getName() + " ADDED (P-" + (currentPerson.get() - 1) + ", " + time + "ms)");
+                System.out.println(Thread.currentThread().getName() + " added (P-" + (currentPerson.get() - 1) + ", " + time + "ms)");
                 pred.lock.unlock();
             }
         }

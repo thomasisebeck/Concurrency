@@ -99,7 +99,7 @@ public class FineList {
 
             } finally { if (curr != null) curr.lock.unlock(); }
         } finally {
-            System.out.println(Thread.currentThread().getName() + " ADDED (P-" + (currentPerson.get() - 1) + ", " + time + "ms)");
+            System.out.println(Thread.currentThread().getName() + " added (P-" + (currentPerson.get() - 1) + ", " + time + "ms)");
             if (pred != null && pred.lock.isLocked()) pred.lock.unlock();
         }
 
