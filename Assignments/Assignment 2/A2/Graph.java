@@ -5,8 +5,8 @@ import java.util.List;
 
 class Graph<T> {
 
-    List< UpDownEdge<T> > upDownEdges;
-    List< LeftRightEdge<T> > leftRightEdges;
+    List<UpDownEdge> upDownEdges;
+    List<LeftRightEdge> leftRightEdges;
     int vehicleCount = 0;
 
     Graph() {
@@ -37,12 +37,12 @@ class Graph<T> {
         addNewEdge(down, downDest, true, "T-Down-Dest");
     }
 
-    public void addNewEdge(MapNode<T> source, MapNode<T> destination, boolean upDown, String threadName) {
+    public void addNewEdge(MapNode source, MapNode destination, boolean upDown, String threadName) {
 
         if (upDown) {
-            UpDownEdge<T> up = new UpDownEdge<>(source, destination, threadName);
+            UpDownEdge up = new UpDownEdge(source, destination, threadName);
             source.up = up;
-            UpDownEdge<T> down = new UpDownEdge<>(destination, source, threadName);
+            UpDownEdge down = new UpDownEdge(destination, source, threadName);
             source.down = down;
 
             //add the vehicles to the edge
@@ -54,9 +54,9 @@ class Graph<T> {
             upDownEdges.add(down);
         }
         else {
-            LeftRightEdge<T> left = new LeftRightEdge<>(source, destination, threadName);
+            LeftRightEdge left = new LeftRightEdge(source, destination, threadName);
             source.left = left;
-            LeftRightEdge<T> right = new LeftRightEdge<>(source, destination, threadName);
+            LeftRightEdge right = new LeftRightEdge(source, destination, threadName);
             source.right = right;
 
             //add the vehicles to the edge

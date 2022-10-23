@@ -3,7 +3,7 @@ package A2;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UpDownEdge <T> extends Thread  {
+public class UpDownEdge extends Thread  {
     MapNode up;
     MapNode down;
     String threadName;

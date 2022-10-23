@@ -1,7 +1,5 @@
 package Task1;
 
-import javax.swing.plaf.TableHeaderUI;
-
 public class EnqueueThread extends Thread {
     BoundedQueue myQueue;
     public EnqueueThread(BoundedQueue Q) {

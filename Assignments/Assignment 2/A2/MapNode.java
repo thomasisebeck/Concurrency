@@ -7,10 +7,10 @@ public class MapNode <T> {
     private final ReentrantLock horizontalLock;
     public boolean isDestination;
     String nodeName;
-    UpDownEdge<T> up;
-    UpDownEdge<T> down;
-    LeftRightEdge<T> left;
-    LeftRightEdge<T> right;
+    UpDownEdge up;
+    UpDownEdge down;
+    LeftRightEdge left;
+    LeftRightEdge right;
 
     MapNode(String nodeName, boolean isDestination) {
         verticalLock = new ReentrantLock();
