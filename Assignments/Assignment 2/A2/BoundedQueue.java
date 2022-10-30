@@ -31,9 +31,7 @@ public class BoundedQueue<T> {
             while ((tail.get() - head.get()) == capacity)
                 notFullCondition.await();
 
-            printLock.lock();
             queue[tail.getAndIncrement() % capacity] = x; //add node
-            printLock.unlock();
 
             if ((tail.get() - head.get()) == 1) //not Empty, and first to be not empty
                 mustWakeDequeuers = true;
@@ -59,6 +57,32 @@ public class BoundedQueue<T> {
     public int getSize() {
         return tail.get() - head.get();
     }
+
+    public void print(boolean isEntering) {
+        printLock.lock();
+        String res;
+
+        if (isEntering)
+            res = "entering: ";
+        else
+            res = "leaving: ";
+
+        boolean musPrint = false;
+        for (int i = head.get(); i < tail.get(); i++) {
+            if (queue[i % capacity] != null) {
+                musPrint = true;
+                res += queue[i % capacity].getName();
+                if (i != tail.get() - 1)
+                    res += ", ";
+            }
+        }
+
+        if (musPrint)
+            System.out.println(Thread.currentThread().getName() + ": " + res);
+
+        printLock.unlock();
+    }
+
     public Vehicle deq() throws InterruptedException {
         Vehicle result;
         boolean mustWakeEnqueuers = false;
@@ -68,23 +92,7 @@ public class BoundedQueue<T> {
             while ((tail.get() - head.get()) == 0)
                 notEmptyCondition.await();
 
-            printLock.lock();
             result = queue[head.getAndIncrement() % capacity];
-
-            String res = "";
-
-            for (int i = head.get(); i < tail.get(); i++) {
-                if (queue[i % capacity] != null) {
-                    res += queue[i % capacity].getName();
-                    if (i != tail.get() - 1)
-                        res += ", ";
-                }
-            }
-
-            if (res != "")
-                System.out.println(res);
-
-            printLock.unlock();
 
             if ((tail.get() - head.get()) == capacity - 2) //not full, and first to be not full
                 mustWakeEnqueuers = true;

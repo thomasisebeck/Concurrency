@@ -1,9 +1,5 @@
 package A2;
 
-import com.sun.tools.jconsole.JConsoleContext;
-
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,6 +36,16 @@ public class MapNode {
         }
     }
 
+    public void sleepAndPrint(BoundedQueue<Vehicle> toPrint, boolean isEntering) {
+        try {
+            if (isEntering)
+                Thread.sleep(200);
+            toPrint.print(isEntering);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void directVehicle(Vehicle v) {
 
         if (!v.route.isEmpty()) {
@@ -54,10 +60,12 @@ public class MapNode {
                 switch (nextTurn) {
                     case UP:
                         if (this.up != null) {
-                            sleepThread(200);
                             try {
-                                up.vehicleBoundedQueue.enq(v);
-                                System.out.println(v.getName() + " went up.");
+                                synchronized (this) {
+                                    sleepAndPrint(up.vehicleBoundedQueue, true);
+                                    up.vehicleBoundedQueue.enq(v);
+                                    sleepAndPrint(up.vehicleBoundedQueue, false);
+                                }
                                 turned = true;
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
@@ -70,8 +78,11 @@ public class MapNode {
                         if (this.down != null) {
                             sleepThread(200);
                             try {
-                                down.vehicleBoundedQueue.enq(v);
-                                System.out.println(v.getName() + " went down.");
+                                synchronized (this) {
+                                    sleepAndPrint(down.vehicleBoundedQueue, true);
+                                    down.vehicleBoundedQueue.enq(v);
+                                    sleepAndPrint(down.vehicleBoundedQueue, false);
+                                }
                                 turned = true;
                             } catch (InterruptedException e) {
                                 throw  new RuntimeException(e);
@@ -84,8 +95,11 @@ public class MapNode {
                         if (this.left != null) {
                             sleepThread(200);
                             try {
-                                left.vehicleBoundedQueue.enq(v);
-                                System.out.println(v.getName() + " went left.");
+                                synchronized (this) {
+                                    sleepAndPrint(left.vehicleBoundedQueue, true);
+                                    left.vehicleBoundedQueue.enq(v);
+                                    sleepAndPrint(left.vehicleBoundedQueue, false);
+                                }
                                 turned = true;
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
@@ -97,8 +111,11 @@ public class MapNode {
                         if (this.right != null) {
                             sleepThread(200);
                             try {
-                                right.vehicleBoundedQueue.enq(v);
-                                System.out.println(v.getName() + " went right.");
+                                synchronized (this) {
+                                    sleepAndPrint(right.vehicleBoundedQueue, true);
+                                    right.vehicleBoundedQueue.enq(v);
+                                    sleepAndPrint(right.vehicleBoundedQueue, false);
+                                }
                                 turned = true;
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
