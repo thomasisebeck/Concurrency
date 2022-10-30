@@ -1,23 +1,19 @@
 package A2;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Vehicle {
-    private final VehicleType type;
     private final String name;
-    public AtomicInteger crossedIntersections;
+    public ArrayList<Directions> route;
 
-    Vehicle(VehicleType type, String name) {
-        this.type = type;
+    Vehicle(String name, ArrayList<Directions> route) {
         this.name = name;
-        crossedIntersections = new AtomicInteger(0);
+        this.route = route;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public VehicleType getType() {
-        return this.type;
-    }
 }

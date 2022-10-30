@@ -1,89 +1,115 @@
 package A2;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class Graph<T> {
 
-    List<UpDownEdge> upDownEdges;
-    List<LeftRightEdge> leftRightEdges;
-    List<MapNode<T>> nodes;
-    int vehicleCount = 0;
+    List<Edge> edges;
+    List<MapNode> nodes;
+    int vehicleCount;
+    AtomicInteger numVehiclesAtDest;
+    AtomicBoolean printed;
 
     Graph() {
-        upDownEdges = new LinkedList<>();
-        leftRightEdges = new LinkedList<>();
+        edges = new LinkedList<>();
         nodes = new LinkedList<>();
+        vehicleCount = 0;
+        numVehiclesAtDest = new AtomicInteger(0);
+        printed = new AtomicBoolean(false);
+        final int TOTAL_VEHICLES = 8;
 
-        //create a map of 1 intersection
-        MapNode<T> middle = new MapNode<>("middle", false);
-        nodes.add(middle);
-        MapNode<T> left = new MapNode<>("left", false);
-        nodes.add(left);
-        MapNode<T> leftDest = new MapNode<>("leftDest", true);
-        nodes.add(leftDest);
-        MapNode<T> right = new MapNode<>("right", false);
-        nodes.add(right);
-        MapNode<T> rightDest = new MapNode<>("rightDest", true);
-        nodes.add(rightDest);
-        MapNode<T> up = new MapNode<>("up", false);
-        nodes.add(up);
-        MapNode<T> upDest = new MapNode<>("upDest", true);
-        nodes.add(upDest);
-        MapNode<T> down = new MapNode<>("down", false);
-        nodes.add(down);
-        MapNode<T> downDest = new MapNode<>("downDest", true);
-        nodes.add(downDest);
+        //total vehicles = num_edges (8) * vehicle per edge (2)
 
-        //connect the middle 5 nodes
-        addNewEdge(middle, left, false, "T-Middle-Left");
-        addNewEdge(middle, right, false, "T-Middle-Right");
-        addNewEdge(middle, up, true, "T-Middle-Up");
-        addNewEdge(middle, down, true, "T-Middle-Down");
+        MapNode TL = new MapNode("TL", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        nodes.add(TL);
+        MapNode TR = new MapNode("TR", numVehiclesAtDest, printed,  TOTAL_VEHICLES);
+        nodes.add(TR);
+        MapNode BL = new MapNode("BL", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        nodes.add(BL);
+        MapNode BR = new MapNode("BR", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        nodes.add(BR);
 
-        //connect the outer 4 nodes
-        addNewEdge(left, leftDest, false, "T-Left-Dest");
-        addNewEdge(right, rightDest, false, "T-Right-Dest");
-        addNewEdge(up, upDest, true, "T-Up-Dest");
-        addNewEdge(down, downDest, true, "T-Down-Dest");
-    }
+        //---------- MIDDLE SQUARE ----------//
 
-    public void addNewEdge(MapNode source, MapNode destination, boolean upDown, String threadName) {
+        Edge MUU = new Edge("MUU", TR, TL);
+        Edge MUD = new Edge("MUD", TL, TR);
+        TL.right = MUD;
+        TR.left = MUU;
+        edges.add(MUU);
+        edges.add(MUD);
 
-        if (upDown) {
-            UpDownEdge up = new UpDownEdge(source, destination, threadName);
-            source.up = up;
-            destination.down = up;
-            UpDownEdge down = new UpDownEdge(destination, source, threadName);
-            source.down = down;
-            destination.up = down;
+        Edge MLL = new Edge("MLL", TL, BL);
+        Edge MLR = new Edge("MLR", BL, TL);
+        TL.down = MLL;
+        BL.up = MLR;
+        edges.add(MLL);
+        edges.add(MLR);
 
-            //add the vehicles to the edge
-            up.addVehicle(new Vehicle(VehicleType.DOWN, "DV-" + vehicleCount++));
-            down.addVehicle(new Vehicle(VehicleType.UP, "UV-" + vehicleCount++));
+        Edge MDD = new Edge("MDD", BL, BR);
+        Edge MDU = new Edge("MDU", BR, BL);
+        BL.right = MDD;
+        BR.left = MDU;
+        edges.add(MDD);
+        edges.add(MDU);
 
-            //add the edges to the list
-            upDownEdges.add(up);
-            upDownEdges.add(down);
+        Edge MRR = new Edge("MRR", BR, TR);
+        Edge MRL = new Edge("MRL", TR, BR);
+        BR.up = MRR;
+        TR.down = MRL;
+        edges.add(MRR);
+        edges.add(MRL);
+
+        //-----------------------------------//
+
+        int vehiclesAdded = 0;
+
+        //add vehicles to each edge
+        for (Edge e: edges) {
+            Vehicle vehicle = new Vehicle("v-" + vehiclesAdded++, generateRoute());
+            e.addVehicle(vehicle);
+            vehiclesAdded += 2;
         }
-        else {
-            LeftRightEdge left = new LeftRightEdge(source, destination, threadName);
-            source.left = left;
-            destination.right = left;
-            LeftRightEdge right = new LeftRightEdge(source, destination, threadName);
-            source.right = right;
-            destination.left = right;
 
-            //add the vehicles to the edge
-            left.addVehicle(new Vehicle(VehicleType.LEFT, "LV-" + vehicleCount++));
-            right.addVehicle(new Vehicle(VehicleType.RIGHT, "RV-" + vehicleCount++));
-
-            //add edges to the list
-            leftRightEdges.add(left);
-            leftRightEdges.add(right);
+        if (TOTAL_VEHICLES != vehiclesAdded) {
+            System.out.println("total: " + TOTAL_VEHICLES);
+            System.out.println("added: " + vehiclesAdded);
+            System.out.println("INCORRECT COUNT!");
         }
 
     }
+
+    public ArrayList<Directions> generateRoute() {
+        ArrayList<Directions> route = new ArrayList<>();
+
+        //take a random number of turns between 1 and 5
+        int random = new Random().nextInt(5) + 1;
+
+        for (int i = 0; i < random; i++) {
+            //add a random direction
+            int direction = new Random().nextInt(5);
+            switch(direction) {
+                case 0:
+                    route.add(Directions.UP);
+                    break;
+                case 1:
+                    route.add(Directions.DOWN);
+                    break;
+                case 2:
+                    route.add(Directions.LEFT);
+                    break;
+                case 3:
+                    route.add(Directions.RIGHT);
+            }
+        }
+
+        return route;
+    }
+
 
     public void switchStates() {
         synchronized (this) {
@@ -91,17 +117,12 @@ class Graph<T> {
             for (MapNode n : nodes) {
                 n.switchStates();
             }
-            System.out.println("Switched states...");
         }
     }
 
     public void startDriving() {
-        for (UpDownEdge e : upDownEdges) {
+        for (Edge e : edges)
             e.start();
-        }
-        for (LeftRightEdge e: leftRightEdges) {
-            e.start();
-        }
     }
 
 }

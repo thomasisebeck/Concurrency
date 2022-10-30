@@ -6,9 +6,9 @@ public class Main {
         Graph<String> g = new Graph<>();
         g.startDriving();
 
-        for (int i = 0; i < 10; i++) {
+        while (true) {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(300);
                 g.switchStates();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

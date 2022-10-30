@@ -1,6 +1,6 @@
 package A2;
 
-public enum VehicleType {
+public enum Directions {
     UP,
     DOWN,
     LEFT,
