@@ -25,8 +25,19 @@ public class UpDownEdge extends Thread  {
 
     public void run() {
         while (true) {
-            for (int i = 0; i < this.vehicles.size(); i++)
-                this.up.transferVertical();
+            for (int i = 0; i < this.vehicles.size(); i++) {
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (this.up != null)
+                    this.up.transferVertical();
+                if (this.down != null)
+                    this.down.transferVertical();
+            }
         }
     }
 

@@ -3,13 +3,13 @@ package A2;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LeftRightEdge <T> extends Thread {
-    MapNode<T> left;
-    MapNode<T> right;
+public class LeftRightEdge extends Thread {
+    MapNode left;
+    MapNode right;
     String threadName;
     List<Vehicle> vehicles;
 
-    LeftRightEdge(MapNode<T> l, MapNode<T> r, String threadName) {
+    LeftRightEdge(MapNode l, MapNode r, String threadName) {
         this.left = l;
         this.right = r;
         this.threadName = threadName;
@@ -25,8 +25,19 @@ public class LeftRightEdge <T> extends Thread {
 
     public void run() {
         while (true) {
-            for (int i = 0; i < this.vehicles.size(); i++)
-                this.left.transferHorizontal();
+            for (int i = 0; i < this.vehicles.size(); i++) {
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (this.left != null)
+                    this.left.transferHorizontal();
+                if (this.right != null)
+                    this.right.transferHorizontal();
+            }
         }
     }
 }

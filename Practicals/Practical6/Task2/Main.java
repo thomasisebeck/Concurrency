@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Main {
     public static void main (String[] args) {
         final int CAPACITY = 5;
-        final int NUM_DEQUEUERS = 5;
-        final int NUM_ENQUEERS = 6;
+        final int NUM_DEQUEUERS = 7;
+        final int NUM_ENQUEERS = 4;
 
         BoundedQueue<Integer> Q = new BoundedQueue<Integer>(CAPACITY);
 
