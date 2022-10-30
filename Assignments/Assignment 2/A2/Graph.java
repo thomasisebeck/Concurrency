@@ -21,7 +21,7 @@ class Graph<T> {
         vehicleCount = 0;
         numVehiclesAtDest = new AtomicInteger(0);
         printed = new AtomicBoolean(false);
-        final int TOTAL_VEHICLES = 16;
+        final int TOTAL_VEHICLES = 32;
 
         //total vehicles = num_edges (8) * vehicle per edge (2)
 
@@ -74,12 +74,6 @@ class Graph<T> {
             e.addVehicle(vehicle);
             Vehicle vehicle2 = new Vehicle("v-" + vehiclesAdded++, generateRoute());
             e.addVehicle(vehicle2);
-        }
-
-        if (TOTAL_VEHICLES != vehiclesAdded) {
-            System.out.println("total: " + TOTAL_VEHICLES);
-            System.out.println("added: " + vehiclesAdded);
-            System.out.println("INCORRECT COUNT!");
         }
 
     }

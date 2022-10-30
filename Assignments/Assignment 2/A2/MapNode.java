@@ -55,9 +55,13 @@ public class MapNode {
                     case UP:
                         if (this.up != null) {
                             sleepThread(200);
-                            System.out.println(v.getName() + " went up.");
-                            up.vehicles.add(v);
-                            turned = true;
+                            try {
+                                up.vehicleBoundedQueue.enq(v);
+                                System.out.println(v.getName() + " went up.");
+                                turned = true;
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         } else
                             v.route.add(Directions.DOWN);
 
@@ -65,8 +69,13 @@ public class MapNode {
                     case DOWN:
                         if (this.down != null) {
                             sleepThread(200);
-                            System.out.println(v.getName() + " went down.");
-                            down.vehicles.add(v);
+                            try {
+                                down.vehicleBoundedQueue.enq(v);
+                                System.out.println(v.getName() + " went down.");
+                                turned = true;
+                            } catch (InterruptedException e) {
+                                throw  new RuntimeException(e);
+                            }
                             turned = true;
                         } else
                             v.route.add(Directions.UP);
@@ -74,18 +83,26 @@ public class MapNode {
                     case LEFT:
                         if (this.left != null) {
                             sleepThread(200);
-                            System.out.println(v.getName() + " went left.");
-                            left.vehicles.add(v);
-                            turned = true;
+                            try {
+                                left.vehicleBoundedQueue.enq(v);
+                                System.out.println(v.getName() + " went left.");
+                                turned = true;
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         } else
                             v.route.add(Directions.RIGHT);
                         break;
                     case RIGHT:
                         if (this.right != null) {
                             sleepThread(200);
-                            System.out.println(v.getName() + " went right.");
-                            right.vehicles.add(v);
-                            turned = true;
+                            try {
+                                right.vehicleBoundedQueue.enq(v);
+                                System.out.println(v.getName() + " went right.");
+                                turned = true;
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         } else
                             v.route.add(Directions.LEFT);
 
@@ -97,26 +114,31 @@ public class MapNode {
 
         if (v.route.isEmpty()) {
             vehiclesAtDestination.getAndIncrement();
-            if (vehiclesAtDestination.get() == TOTAL_VEHICLES)
+            System.out.println(v.getName() + " reached its destination (" + vehiclesAtDestination.get() + " of " + TOTAL_VEHICLES + ")");
+            if (vehiclesAtDestination.get() == TOTAL_VEHICLES) {
+                sleepThread(500);
                 System.out.println("ALL VEHICLES REACHED THEIR DESTINATION");
-            else
-                System.out.println(v.getName() + " reached its destination (" + vehiclesAtDestination.get() + " of " + TOTAL_VEHICLES + ")");
+            }
         }
     }
 
     public boolean transfer() {
 
-        if (up != null && !up.vehicles.isEmpty()) { //transfer from above
+        if (up != null && !(up.vehicleBoundedQueue.isEmpty())) { //transfer from above
             //pop the next turn-off of the list
             if (!horizontalLock.isLocked()) {
                 Vehicle v;
                 try {
                     transferLock.lock();
-                    if (!up.vehicles.isEmpty()) {
-                        v = up.vehicles.remove(0);
-                        sleepThread(VEHICLE_SLEEP_TIME);
-                        directVehicle(v);
-                        return true;
+                    if (!up.vehicleBoundedQueue.isEmpty()) {
+                        try {
+                            v = up.vehicleBoundedQueue.deq();
+                            sleepThread(VEHICLE_SLEEP_TIME);
+                            directVehicle(v);
+                            return true;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } finally {
                     transferLock.unlock();
@@ -124,18 +146,22 @@ public class MapNode {
             }
         }
 
-        if (down != null && !down.vehicles.isEmpty()) { //transfer from below
+        if (down != null && !down.vehicleBoundedQueue.isEmpty()) { //transfer from below
 
             //pop the next turn-off of the list
             if (!horizontalLock.isLocked()) {
                 Vehicle v;
                 try {
                     transferLock.lock();
-                    if (!down.vehicles.isEmpty()) {
-                        v = down.vehicles.remove(0);
-                        sleepThread(VEHICLE_SLEEP_TIME);
-                        directVehicle(v);
-                        return true;
+                    if (!down.vehicleBoundedQueue.isEmpty()) {
+                        try {
+                            v = down.vehicleBoundedQueue.deq();
+                            sleepThread(VEHICLE_SLEEP_TIME);
+                            directVehicle(v);
+                            return true;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } finally {
                     transferLock.unlock();
@@ -144,18 +170,22 @@ public class MapNode {
             }
         }
 
-        if (left != null && !left.vehicles.isEmpty()) { //transfer from above
+        if (left != null && !left.vehicleBoundedQueue.isEmpty()) { //transfer from above
 
             //pop the next turn-off of the list
             if (!verticalLock.isLocked()) {
                 Vehicle v;
                 try {
                     transferLock.lock();
-                    if (!left.vehicles.isEmpty()) {
-                        v = left.vehicles.remove(0);
-                        sleepThread(VEHICLE_SLEEP_TIME);
-                        directVehicle(v);
-                        return true;
+                    if (!left.vehicleBoundedQueue.isEmpty()) {
+                        try {
+                            v = left.vehicleBoundedQueue.deq();
+                            sleepThread(VEHICLE_SLEEP_TIME);
+                            directVehicle(v);
+                            return true;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } finally {
                     transferLock.unlock();
@@ -163,18 +193,22 @@ public class MapNode {
             }
         }
 
-        if (right != null && !right.vehicles.isEmpty()) { //transfer from below
+        if (right != null && !right.vehicleBoundedQueue.isEmpty()) { //transfer from below
 
             //pop the next turn-off of the list
             if (!verticalLock.isLocked()) {
                 Vehicle v;
                 try {
                     transferLock.lock();
-                    if (!right.vehicles.isEmpty()) {
-                        v = right.vehicles.remove(0);
-                        sleepThread(VEHICLE_SLEEP_TIME);
-                        directVehicle(v);
-                        return true;
+                    if (!right.vehicleBoundedQueue.isEmpty()) {
+                        try {
+                            v = right.vehicleBoundedQueue.deq();
+                            sleepThread(VEHICLE_SLEEP_TIME);
+                            directVehicle(v);
+                            return true;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } finally {
                     transferLock.unlock();
