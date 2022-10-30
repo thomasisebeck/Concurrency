@@ -28,10 +28,15 @@ public class Edge extends Thread {
         toPrint = "ROAD " + threadName + ": ";
 
         for (int i = 0; i < vehicles.size(); i++) {
-            mustPrint = true;
-            toPrint = toPrint + vehicles.get(i).getName();
-            if (i != vehicles.size() - 1 && vehicles.size() != 1)
-                toPrint += ", ";
+            synchronized (this) {
+                if (vehicles.size() != 0 && i < vehicles.size()) {
+                    mustPrint = true;
+                    if (vehicles.get(i) != null)
+                        toPrint = toPrint + vehicles.get(i).getName();
+                    if (i != vehicles.size() - 1 && vehicles.size() != 1)
+                        toPrint += ", ";
+                }
+            }
         }
 
         if (mustPrint)
@@ -48,16 +53,24 @@ public class Edge extends Thread {
 //                }
 
                 if (this.first != null) {
-                    this.first.transfer();
-                    printLock.lock();
-                    printList();
-                    printLock.unlock();
+                    if (this.first.transfer()){
+                        try {
+                            printLock.lock();
+                            printList();
+                        } finally {
+                            printLock.unlock();
+                        }
+                    }
                 }
                 if (this.second != null) {
-                    this.second.transfer();
-                    printLock.lock();
-                    printList();
-                    printLock.unlock();
+                    if (this.second.transfer()){
+                        try {
+                            printLock.lock();
+                            printList();
+                        } finally {
+                            printLock.unlock();
+                        }
+                    }
                 }
             }
         }

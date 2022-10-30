@@ -21,17 +21,17 @@ class Graph<T> {
         vehicleCount = 0;
         numVehiclesAtDest = new AtomicInteger(0);
         printed = new AtomicBoolean(false);
-        final int TOTAL_VEHICLES = 8;
+        final int TOTAL_VEHICLES = 16;
 
         //total vehicles = num_edges (8) * vehicle per edge (2)
 
-        MapNode TL = new MapNode("TL", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        MapNode TL = new MapNode("TL", numVehiclesAtDest, TOTAL_VEHICLES);
         nodes.add(TL);
-        MapNode TR = new MapNode("TR", numVehiclesAtDest, printed,  TOTAL_VEHICLES);
+        MapNode TR = new MapNode("TR", numVehiclesAtDest,  TOTAL_VEHICLES);
         nodes.add(TR);
-        MapNode BL = new MapNode("BL", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        MapNode BL = new MapNode("BL", numVehiclesAtDest, TOTAL_VEHICLES);
         nodes.add(BL);
-        MapNode BR = new MapNode("BR", numVehiclesAtDest, printed, TOTAL_VEHICLES);
+        MapNode BR = new MapNode("BR", numVehiclesAtDest, TOTAL_VEHICLES);
         nodes.add(BR);
 
         //---------- MIDDLE SQUARE ----------//
@@ -72,7 +72,8 @@ class Graph<T> {
         for (Edge e: edges) {
             Vehicle vehicle = new Vehicle("v-" + vehiclesAdded++, generateRoute());
             e.addVehicle(vehicle);
-            vehiclesAdded += 2;
+            Vehicle vehicle2 = new Vehicle("v-" + vehiclesAdded++, generateRoute());
+            e.addVehicle(vehicle2);
         }
 
         if (TOTAL_VEHICLES != vehiclesAdded) {
@@ -86,12 +87,12 @@ class Graph<T> {
     public ArrayList<Directions> generateRoute() {
         ArrayList<Directions> route = new ArrayList<>();
 
-        //take a random number of turns between 1 and 5
-        int random = new Random().nextInt(5) + 1;
+        //take 3 turns each
+        int random = 3;
 
         for (int i = 0; i < random; i++) {
             //add a random direction
-            int direction = new Random().nextInt(5);
+            int direction = new Random().nextInt(4);
             switch(direction) {
                 case 0:
                     route.add(Directions.UP);
@@ -112,11 +113,9 @@ class Graph<T> {
 
 
     public void switchStates() {
-        synchronized (this) {
-            //go through all nodes and switch their states...
-            for (MapNode n : nodes) {
-                n.switchStates();
-            }
+        //go through all nodes and switch their states...
+        for (MapNode n : nodes) {
+            n.switchStates();
         }
     }
 

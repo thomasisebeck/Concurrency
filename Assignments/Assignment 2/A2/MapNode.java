@@ -1,5 +1,7 @@
 package A2;
 
+import com.sun.tools.jconsole.JConsoleContext;
+
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,11 +18,10 @@ public class MapNode {
     Edge left;
     Edge right;
     AtomicInteger vehiclesAtDestination;
-    AtomicBoolean printed;
     int TOTAL_VEHICLES;
     int VEHICLE_SLEEP_TIME;
 
-    MapNode(String nodeName, AtomicInteger vehiclesAtDestination, AtomicBoolean printed, int TOTAL_VEHICLES) {
+    MapNode(String nodeName, AtomicInteger vehiclesAtDestination, int TOTAL_VEHICLES) {
         verticalLock = new Bakery(2);
         verticalLock.lock();
         horizontalLock = new Bakery(2);
@@ -28,7 +29,6 @@ public class MapNode {
         this.nodeName = nodeName;
         this.TOTAL_VEHICLES = TOTAL_VEHICLES;
         this.VEHICLE_SLEEP_TIME = 50;
-        this.printed = printed;
         this.vehiclesAtDestination = vehiclesAtDestination;
     }
 
@@ -44,83 +44,83 @@ public class MapNode {
 
         if (!v.route.isEmpty()) {
 
-            Directions nexTurn = v.route.remove(0);
-
             boolean turned = false;
 
-            //direct the vehicle to the next node in its route
-            switch (nexTurn) {
-                case UP:
-                    if (this.up != null) {
-                        System.out.println(v.getName() + " went up.");
-                        up.vehicles.add(v);
-                        turned = true;
-                    }
-                    break;
-                case DOWN:
-                    if (this.down != null) {
-                        System.out.println(v.getName() + " went down.");
-                        down.vehicles.add(v);
-                        turned = true;
-                    }
-                    break;
-                case LEFT:
-                    if (this.left != null) {
-                        System.out.println(v.getName() + " went left.");
-                        left.vehicles.add(v);
-                        turned = true;
-                    }
-                    break;
-                case RIGHT:
-                    if (this.right != null) {
-                        System.out.println(v.getName() + " went right.");
-                        right.vehicles.add(v);
-                        turned = true;
-                    }
+            while (!turned) {
 
-            } // switch
+                Directions nextTurn = v.route.remove(0);
 
-            if (!turned) { //change the route if car could not take path!
-                //get a random number
-                int direction = new Random().nextInt(4);
-                switch (direction) {
-                    case 0:
-                        v.route.add(0, Directions.UP);
+                //direct the vehicle to the next node in its route
+                switch (nextTurn) {
+                    case UP:
+                        if (this.up != null) {
+                            sleepThread(200);
+                            System.out.println(v.getName() + " went up.");
+                            up.vehicles.add(v);
+                            turned = true;
+                        } else
+                            v.route.add(Directions.DOWN);
+
                         break;
-                    case 1:
-                        v.route.add(0, Directions.DOWN);
+                    case DOWN:
+                        if (this.down != null) {
+                            sleepThread(200);
+                            System.out.println(v.getName() + " went down.");
+                            down.vehicles.add(v);
+                            turned = true;
+                        } else
+                            v.route.add(Directions.UP);
                         break;
-                    case 2:
-                        v.route.add(0, Directions.LEFT);
+                    case LEFT:
+                        if (this.left != null) {
+                            sleepThread(200);
+                            System.out.println(v.getName() + " went left.");
+                            left.vehicles.add(v);
+                            turned = true;
+                        } else
+                            v.route.add(Directions.RIGHT);
                         break;
-                    case 3:
-                        v.route.add(0, Directions.RIGHT);
-                }
+                    case RIGHT:
+                        if (this.right != null) {
+                            sleepThread(200);
+                            System.out.println(v.getName() + " went right.");
+                            right.vehicles.add(v);
+                            turned = true;
+                        } else
+                            v.route.add(Directions.LEFT);
+
+                } // switch
+
             }
+
         }
 
         if (v.route.isEmpty()) {
             vehiclesAtDestination.getAndIncrement();
             if (vehiclesAtDestination.get() == TOTAL_VEHICLES)
-                System.out.println("ALL VEHICLES REACHED THIER DESTINATION");
+                System.out.println("ALL VEHICLES REACHED THEIR DESTINATION");
             else
                 System.out.println(v.getName() + " reached its destination (" + vehiclesAtDestination.get() + " of " + TOTAL_VEHICLES + ")");
         }
     }
 
-    public void transfer() {
+    public boolean transfer() {
 
         if (up != null && !up.vehicles.isEmpty()) { //transfer from above
             //pop the next turn-off of the list
             if (!horizontalLock.isLocked()) {
                 Vehicle v;
-                transferLock.lock();
-                if (!up.vehicles.isEmpty()) {
-                    v = up.vehicles.remove(0);
-                    sleepThread(VEHICLE_SLEEP_TIME);
-                    directVehicle(v);
+                try {
+                    transferLock.lock();
+                    if (!up.vehicles.isEmpty()) {
+                        v = up.vehicles.remove(0);
+                        sleepThread(VEHICLE_SLEEP_TIME);
+                        directVehicle(v);
+                        return true;
+                    }
+                } finally {
+                    transferLock.unlock();
                 }
-                transferLock.unlock();
             }
         }
 
@@ -129,13 +129,18 @@ public class MapNode {
             //pop the next turn-off of the list
             if (!horizontalLock.isLocked()) {
                 Vehicle v;
-                transferLock.lock();
-                if (!down.vehicles.isEmpty()) {
-                    v = down.vehicles.remove(0);
-                    sleepThread(VEHICLE_SLEEP_TIME);
-                    directVehicle(v);
+                try {
+                    transferLock.lock();
+                    if (!down.vehicles.isEmpty()) {
+                        v = down.vehicles.remove(0);
+                        sleepThread(VEHICLE_SLEEP_TIME);
+                        directVehicle(v);
+                        return true;
+                    }
+                } finally {
+                    transferLock.unlock();
                 }
-                transferLock.unlock();
+
             }
         }
 
@@ -144,13 +149,17 @@ public class MapNode {
             //pop the next turn-off of the list
             if (!verticalLock.isLocked()) {
                 Vehicle v;
-                transferLock.lock();
-                if (!left.vehicles.isEmpty()) {
-                    v = left.vehicles.remove(0);
-                    sleepThread(VEHICLE_SLEEP_TIME);
-                    directVehicle(v);
+                try {
+                    transferLock.lock();
+                    if (!left.vehicles.isEmpty()) {
+                        v = left.vehicles.remove(0);
+                        sleepThread(VEHICLE_SLEEP_TIME);
+                        directVehicle(v);
+                        return true;
+                    }
+                } finally {
+                    transferLock.unlock();
                 }
-                transferLock.unlock();
             }
         }
 
@@ -159,28 +168,32 @@ public class MapNode {
             //pop the next turn-off of the list
             if (!verticalLock.isLocked()) {
                 Vehicle v;
-                transferLock.lock();
-                if (!right.vehicles.isEmpty()) {
-                    v = right.vehicles.remove(0);
-                    sleepThread(VEHICLE_SLEEP_TIME);
-                    directVehicle(v);
+                try {
+                    transferLock.lock();
+                    if (!right.vehicles.isEmpty()) {
+                        v = right.vehicles.remove(0);
+                        sleepThread(VEHICLE_SLEEP_TIME);
+                        directVehicle(v);
+                        return true;
+                    }
+                } finally {
+                    transferLock.unlock();
                 }
-                transferLock.unlock();
             }
         }
+
+        return false;
 
     }
 
     void switchStates() {
-        synchronized (this) {
-            if (horizontalLock.isLocked()) { //lock the vertical lock
-                verticalLock.lock();
-                horizontalLock.unlock();
-            }
-            else { //lock the horizontal lock
-                horizontalLock.lock();
-                verticalLock.unlock();
-            }
+        if (horizontalLock.isLocked()) { //lock the vertical lock
+            verticalLock.lock();
+            horizontalLock.unlock();
+        }
+        else { //lock the horizontal lock
+            horizontalLock.lock();
+            verticalLock.unlock();
         }
     }
 
