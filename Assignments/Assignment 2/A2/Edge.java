@@ -2,6 +2,7 @@ package A2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Edge extends Thread {
@@ -11,7 +12,8 @@ public class Edge extends Thread {
     public MapNode second;
     private ReentrantLock printLock;
     Edge(String threadName, MapNode first, MapNode second) {
-        vehicleBoundedQueue = new BoundedQueue<>(5);
+        int cap = new Random().nextInt(8) + 2;
+        vehicleBoundedQueue = new BoundedQueue<>(cap, threadName);
         this.threadName = threadName;
         this.first = first;
         this.second = second;

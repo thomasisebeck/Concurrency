@@ -76,6 +76,8 @@ class Graph<T> {
             e.addVehicle(vehicle2);
         }
 
+
+
     }
 
     public ArrayList<Directions> generateRoute() {

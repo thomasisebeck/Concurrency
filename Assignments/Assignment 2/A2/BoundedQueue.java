@@ -11,8 +11,9 @@ public class BoundedQueue<T> {
     AtomicInteger head;
     AtomicInteger tail;
     Vehicle[] queue;
+    String name;
 
-    public BoundedQueue(int cap) {
+    public BoundedQueue(int cap, String name) {
         this.capacity = cap;
         queue = new Vehicle[capacity];
         head = new AtomicInteger(0);
@@ -22,6 +23,7 @@ public class BoundedQueue<T> {
         notFullCondition = enqLock.newCondition();
         deqLock = new ReentrantLock();
         notEmptyCondition = deqLock.newCondition();
+        this.name = name;
     }
     public void enq(Vehicle x) throws InterruptedException {
         boolean mustWakeDequeuers = false;
@@ -78,7 +80,7 @@ public class BoundedQueue<T> {
         }
 
         if (musPrint)
-            System.out.println(Thread.currentThread().getName() + ": " + res);
+            System.out.println(name + ": " + res);
 
         printLock.unlock();
     }
