@@ -1,0 +1,84 @@
+Index: Practicals/Practical3/SpinLocks/LockTests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package SpinLocks;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class LockTests {\r\n    public static void main (String[] args) {\r\n\r\n        //sleep time\r\n        final int OVERHEAD_OFFSET = 25;\r\n        final int LOOP_ITERATIONS = 7;\r\n\r\n        //************************* TAS LOCK *****************************//\r\n\r\n        System.out.println(\"~~~~~~~~~~~~~~~~~~~~~~~~~~~\");\r\n        System.out.println(\"             TAS           \");\r\n        System.out.println(\"~~~~~~~~~~~~~~~~~~~~~~~~~~~\");\r\n\r\n        TASLock l_tas = new TASLock();\r\n        ArrayList<Long> timeArray = new ArrayList<>();\r\n        ArrayList<Long> diffArray = new ArrayList<>();\r\n        ArrayList<Integer> numThreadsArr = new ArrayList<>();\r\n\r\n        ArrayList<TASLockThread> TASThreads = null;\r\n\r\n        for (int i = 1; i < LOOP_ITERATIONS; i++) {\r\n\r\n            System.out.println(\"i = \" + i + \" ...\");\r\n\r\n            TASThreads = new ArrayList<>();\r\n\r\n            for (int j = 0; j < (5 * i); j++)\r\n                TASThreads.add(new TASLockThread(l_tas));\r\n\r\n            for (int j = 0; j < (5 * i); j++)\r\n                TASThreads.get(j).start();\r\n\r\n\r\n            numThreadsArr.add(TASThreads.size());\r\n\r\n            // System.out.println(\"Testing \" + numThreads + \" thread(s)\");\r\n\r\n            long startTime = System.currentTimeMillis();\r\n\r\n            //wait while a thread is alive\r\n            for (int j = 0; j < TASThreads.size(); j++) {\r\n                while (TASThreads.get(j).isAlive()) {}\r\n            }\r\n\r\n            long elapsedTime = System.currentTimeMillis() - startTime;\r\n\r\n            //1 thread sleeps for 500ms\r\n\r\n            //add time to array\r\n            timeArray.add(elapsedTime);\r\n            diffArray.add(elapsedTime - (TASThreads.size() * OVERHEAD_OFFSET));\r\n\r\n            while (TASThreads.size() > 0)\r\n                TASThreads.remove(0);\r\n            //Clear the array\r\n            TASThreads = null;\r\n\r\n        }\r\n\r\n        ArrayList<Long> slopes = new ArrayList<>();\r\n        for (int i = 1; i < diffArray.size(); i++)\r\n            slopes.add(diffArray.get(i) - diffArray.get(i - 1));\r\n\r\n        System.out.println(\"Number of threads: \" + numThreadsArr.toString());\r\n        System.out.println(\"----------------------------------------------------------------------\");\r\n        System.out.println(\"TASLock time taken: \" + timeArray.toString() + \" time in ms\");\r\n        System.out.println(\"TASLock overhead:   \" + diffArray.toString() + \" time in ms\");\r\n        System.out.println(\"Overhead increase:  \" + slopes.toString() + \" time in ms\");\r\n        System.out.println(\"----------------------------------------------------------------------\");\r\n\r\n        l_tas = null;\r\n        timeArray = null;\r\n        diffArray = null;\r\n        numThreadsArr = null;\r\n\r\n        //****************************************************************//\r\n\r\n        //---------------------------- TTAS LOCK -------------------------//\r\n\r\n        System.out.println(\"~~~~~~~~~~~~~~~~~~~~~~~~~~~\");\r\n        System.out.println(\"           TTAS            \");\r\n        System.out.println(\"~~~~~~~~~~~~~~~~~~~~~~~~~~~\");\r\n\r\n        TTASLock l_ttas = new TTASLock();\r\n        timeArray = new ArrayList<>();\r\n        diffArray = new ArrayList<>();\r\n        numThreadsArr = new ArrayList<>();\r\n\r\n        ArrayList<TTASLockThread> TTASThreads = null;\r\n\r\n        for (int i = 1; i < LOOP_ITERATIONS; i++) {\r\n\r\n            System.out.println(\"i = \" + i + \" ...\");\r\n\r\n            TTASThreads = new ArrayList<>();\r\n\r\n            for (int j = 0; j < (5 * i); j++)\r\n                TTASThreads.add(new TTASLockThread(l_ttas));\r\n\r\n            for (int j = 0; j < (5 * i); j++)\r\n                TTASThreads.get(j).start();\r\n\r\n            numThreadsArr.add(TTASThreads.size());\r\n\r\n            // System.out.println(\"Testing \" + numThreads + \" thread(s)\");\r\n\r\n            long startTime = System.currentTimeMillis();\r\n\r\n            //wait while a thread is alive\r\n            for (int j = 0; j < TTASThreads.size(); j++) {\r\n                while (TTASThreads.get(j).isAlive()) {}\r\n            }\r\n\r\n            long elapsedTime = System.currentTimeMillis() - startTime;\r\n\r\n            //1 thread sleeps for 500ms\r\n\r\n            //add time to array\r\n            timeArray.add(elapsedTime);\r\n            diffArray.add(elapsedTime - (TTASThreads.size() * OVERHEAD_OFFSET));\r\n\r\n            while (TTASThreads.size() > 0)\r\n                TTASThreads.remove(0);\r\n            //Clear the array\r\n            TTASThreads = null;\r\n\r\n        }\r\n\r\n        slopes = new ArrayList<>();\r\n        for (int i = 1; i < diffArray.size(); i++)\r\n            slopes.add(diffArray.get(i) - diffArray.get(i - 1));\r\n\r\n        System.out.println(\"Number of threads: \" + numThreadsArr.toString());\r\n        System.out.println(\"----------------------------------------------------------------------\");\r\n        System.out.println(\"TTASLock time taken: \" + timeArray.toString() + \" time in ms\");\r\n        System.out.println(\"TTASLock overhead:   \" + diffArray.toString() + \" time in ms\");\r\n        System.out.println(\"Overhead increase:   \" + slopes.toString() + \" time in ms\");\r\n        System.out.println(\"----------------------------------------------------------------------\");\r\n\r\n\r\n        //----------------------------------------------------------------//\r\n\r\n\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Practicals/Practical3/SpinLocks/LockTests.java b/Practicals/Practical3/SpinLocks/LockTests.java
+--- a/Practicals/Practical3/SpinLocks/LockTests.java	
++++ b/Practicals/Practical3/SpinLocks/LockTests.java	
+@@ -11,7 +11,7 @@
+ 
+         //************************* TAS LOCK *****************************//
+ 
+-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
++        /*System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+         System.out.println("             TAS           ");
+         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+ 
+@@ -75,13 +75,13 @@
+         l_tas = null;
+         timeArray = null;
+         diffArray = null;
+-        numThreadsArr = null;
++        numThreadsArr = null;*/
+ 
+         //****************************************************************//
+ 
+         //---------------------------- TTAS LOCK -------------------------//
+ 
+-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
++        /*System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+         System.out.println("           TTAS            ");
+         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+ 
+@@ -139,11 +139,15 @@
+         System.out.println("TTASLock time taken: " + timeArray.toString() + " time in ms");
+         System.out.println("TTASLock overhead:   " + diffArray.toString() + " time in ms");
+         System.out.println("Overhead increase:   " + slopes.toString() + " time in ms");
+-        System.out.println("----------------------------------------------------------------------");
+-
++        System.out.println("----------------------------------------------------------------------");*/
+ 
+         //----------------------------------------------------------------//
+ 
++        //========================== BACKOFF LOCK ========================//
++
++        
++
++        //================================================================//
+ 
+ 
+     }
+Index: Practicals/Practical3/SpinLocks/Backoff.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Practicals/Practical3/SpinLocks/Backoff.java b/Practicals/Practical3/SpinLocks/Backoff.java
+new file mode 100644
+--- /dev/null	
++++ b/Practicals/Practical3/SpinLocks/Backoff.java	
+@@ -0,0 +1,21 @@
++package SpinLocks;
++
++import java.util.concurrent.ThreadLocalRandom;
++
++public class Backoff {
++    final int MIN_DELAY;
++    final int MAX_DELAY;
++    int limit;
++
++    public Backoff(int min, int max) {
++        MIN_DELAY = min;
++        MAX_DELAY = max;
++        limit = min; //start at shortest wait
++    }
++
++    public void backoff() throws InterruptedException {
++        int delay = ThreadLocalRandom.current().nextInt(limit);
++        limit = Math.min(MAX_DELAY, 2 * limit);
++        Thread.sleep(delay);
++    }
++}
